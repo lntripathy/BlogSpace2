@@ -53,7 +53,7 @@ const CommentBox = ({ selectedBlog }) => {
     useEffect(() => {
         const getAllCommentsOfBlog = async () => {
             try {
-                const res = await axios.get(`https://mern-blog-ha28.onrender.com/api/v1/comment/${selectedBlog._id}/comment/all`)
+                const res = await axios.get(`http://localhost:8000/api/v1/comment/${selectedBlog._id}/comment/all`)
                 const data = res.data.comments
                 dispatch(setComment(data))
             } catch (error) {

@@ -8,7 +8,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 import path from "path"
 
-dotenv.config()
+dotenv.config({ path: "./backend/.env" })
+
 const app = express()
 
 const PORT = process.env.PORT || 3000
@@ -18,10 +19,32 @@ const PORT = process.env.PORT || 3000
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
+
+
+// app.use(cors({
+//     origin: "http://localhost:5173",
+//     credentials:true
+// }))
+
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mern-blog-ha28.onrender.com"
+];
+
 app.use(cors({
-    origin: "https://mern-blog-ha28.onrender.com",
-    credentials:true
-}))
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
+
+
 
 const _dirname = path.resolve()
 
