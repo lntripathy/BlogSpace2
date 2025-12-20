@@ -29,7 +29,6 @@ app.use(express.urlencoded({extended:true}));
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mern-blog-ha28.onrender.com"
 ];
 
 app.use(cors({
@@ -42,8 +41,6 @@ app.use(cors({
   },
   credentials: true
 }));
-
-
 
 
 const _dirname = path.resolve()
@@ -61,4 +58,6 @@ const _dirname = path.resolve()
 app.listen(PORT, ()=>{
     console.log(`Server listen at port ${PORT}`);
     connectDB()
+
+
 })

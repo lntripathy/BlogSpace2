@@ -21,7 +21,8 @@ import { setBlog } from '@/redux/blogSlice'
 
 const UpdateBlog = () => {
     const editor = useRef(null);
-   
+    const fileInputRef = useRef(null);
+
     const [loading, setLoading] = useState(false)
     const [publish, setPublish] = useState(false)
     const params = useParams()
@@ -62,6 +63,18 @@ const UpdateBlog = () => {
         }
     };
 
+    const removeThumbnail = () => {
+        setPreviewThumbnail(null);
+        setBlogData(prev => ({
+            ...prev,
+            thumbnail: null
+        }));
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+
     const updateBlogHandler = async () => {
 
         const formData = new FormData();
@@ -69,13 +82,16 @@ const UpdateBlog = () => {
         formData.append("subtitle", blogData.subtitle);
         formData.append("description", content);
         formData.append("category", blogData.category);
-        formData.append("file", blogData.thumbnail);
+        if (blogData.thumbnail) {
+            formData.append("file", blogData.thumbnail);
+        }
+
         try {
             setLoading(true)
             const res = await axios.put(`http://localhost:8000/api/v1/blog/${id}`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
+                // headers: {
+                //     "Content-Type": "multipart/form-data"
+                // },
                 withCredentials: true,
             })
             if (res.data.success) {
@@ -86,7 +102,7 @@ const UpdateBlog = () => {
 
             }
         } catch (error) {
-            console.log(error);
+            console.log("error: ", error);
 
         } finally {
             setLoading(false)
@@ -186,22 +202,35 @@ const UpdateBlog = () => {
                     <div>
                         <Label>Thumbnail</Label>
                         <Input
+                            ref={fileInputRef}
                             id="file"
                             type="file"
                             onChange={selectThumbnail}
                             accept="image/*"
                             className="w-fit dark:border-gray-300"
                         />
+
                         {previewThumbnail && (
-                            <img
-                                src={previewThumbnail}
-                                className="w-64 my-2"
-                                alt="Course Thumbnail"
-                            />
+                            <div className="relative w-64 my-2">
+                                <img
+                                    src={previewThumbnail}
+                                    className="w-64 rounded-md border"
+                                    alt="Blog Thumbnail"
+                                />
+
+                                {/* ❌ Remove button */}
+                                <button
+                                    type="button"
+                                    onClick={removeThumbnail}
+                                    className="absolute top-1 right-1 bg-black bg-opacity-60 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                >
+                                    ✕
+                                </button>
+                            </div>
                         )}
                     </div>
                     <div className='flex gap-3'>
-                        <Button variant="outline" onClick={()=>navigate(-1)}>Back</Button>
+                        <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
                         <Button onClick={updateBlogHandler}>
                             {
                                 loading ? "Please Wait" : "Save"
