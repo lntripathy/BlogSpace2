@@ -145,30 +145,40 @@ const CommentBox = ({ selectedBlog }) => {
         }
     };
 
-     const likeCommentHandler = async (commentId) => {
-         try {
-             const res = await axios.get(
-                 `http://localhost:8000/api/v1/comment/${commentId}/like`,
-                 {
-                     withCredentials: true,
-                 }
-             );
+    const likeCommentHandler = async (commentId) => {
+        try {
+            const res = await axios.get(
+                `http://localhost:8000/api/v1/comment/${commentId}/like`,
+                {
+                    withCredentials: true,
+                }
+            );
 
-             if (res.data.success) {
-                 const updatedComment = res.data.updatedComment;
+            if (res.data.success) {
+                const updatedComment = res.data.updatedComment;
 
-                 const updatedCommentList = comment.map(item =>
-                     item._id === commentId ? updatedComment : item
-                 );
+                const updatedCommentList = comment.map(item =>
+                    item._id === commentId ? updatedComment : item
+                );
 
-                 dispatch(setComment(updatedCommentList));
-                 toast.success(res.data.message)
-             }
-         } catch (error) {
-             console.error("Error liking comment", error);
-             toast.error("Something went wrong");
-         }
-     };
+                dispatch(setComment(updatedCommentList));
+                toast.success(res.data.message)
+            }
+        } catch (error) {
+            console.error("Error liking comment", error);
+            toast.error("Something went wrong");
+        }
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        });
+    };
 
 
     return (
@@ -201,7 +211,7 @@ const CommentBox = ({ selectedBlog }) => {
                                             <AvatarFallback>CN</AvatarFallback>
                                         </Avatar>
                                         <div className='mb-2 space-y-1 md:w-[400px]'>
-                                            <h1 className='font-semibold'>{item?.userId?.firstName} {item?.userId?.lastName} <span className='text-sm ml-2 font-light'>yesterday</span></h1>
+                                            <h1 className='font-semibold'>{item?.userId?.firstName} {item?.userId?.lastName} <span className='text-sm ml-2 font-light'>{formatDate(item.createdAt)}</span></h1>
                                             {editingCommentId === item?._id ? (
                                                 <>
                                                     <Textarea
