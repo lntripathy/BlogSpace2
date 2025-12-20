@@ -27,37 +27,79 @@ const BlogView = () => {
     const { blog } = useSelector(store => store.blog)
     const { user } = useSelector(store => store.auth)
     const selectedBlog = blog.find(blog => blog._id === blogId)
-    const [blogLike, setBlogLike] = useState(selectedBlog?.likes.length)
+    // const [blogLike, setBlogLike] = useState(selectedBlog?.likes.length)
     const { comment } = useSelector(store => store.comment)
-    const [liked, setLiked] = useState(selectedBlog?.likes.includes(user?._id) || false);
+    // const [liked, setLiked] = useState(selectedBlog?.likes.includes(user?._id) || false);
     const dispatch = useDispatch()
     console.log(selectedBlog);
 
+    const [blogLike, setBlogLike] = useState(0);
+    const [liked, setLiked] = useState(false);
+
+    useEffect(() => {
+        if (selectedBlog && user) {
+            setBlogLike(selectedBlog.likes.length);
+            setLiked(selectedBlog.likes.includes(user._id));
+        }
+    }, [selectedBlog, user]);
+
+
+    // const likeOrDislikeHandler = async () => {
+    //     try {
+    //         const action = liked ? 'dislike' : 'like';
+    //         const res = await axios.get(`http://localhost:8000/api/v1/blog/${selectedBlog?._id}/${action}`, { withCredentials: true })
+    //         if (res.data.success) {
+    //             const updatedLikes = liked ? blogLike - 1 : blogLike + 1;
+    //             setBlogLike(updatedLikes);
+    //             setLiked(!liked)
+
+    //             //apne blog ko update krunga
+    //             const updatedBlogData = blog.map(p =>
+    //                 p._id === selectedBlog._id ? {
+    //                     ...p,
+    //                     likes: liked ? p.likes.filter(id => id !== user._id) : [...p.likes, user._id]
+    //                 } : p
+    //             )
+    //             toast.success(res.data.message);
+    //             dispatch(setBlog(updatedBlogData))
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //         toast.error(error.response.data.message)
+
+    //     }
+    // }
+
     const likeOrDislikeHandler = async () => {
         try {
-            const action = liked ? 'dislike' : 'like';
-            const res = await axios.get(`http://localhost:8000/api/v1/blog/${selectedBlog?._id}/${action}`, { withCredentials: true })
-            if (res.data.success) {
-                const updatedLikes = liked ? blogLike - 1 : blogLike + 1;
-                setBlogLike(updatedLikes);
-                setLiked(!liked)
+            const action = liked ? "dislike" : "like";
 
-                //apne blog ko update krunga
-                const updatedBlogData = blog.map(p =>
-                    p._id === selectedBlog._id ? {
-                        ...p,
-                        likes: liked ? p.likes.filter(id => id !== user._id) : [...p.likes, user._id]
-                    } : p
-                )
+            const res = await axios.get(
+                `http://localhost:8000/api/v1/blog/${selectedBlog._id}/${action}`,
+                { withCredentials: true }
+            );
+
+            if (res.data.success) {
+                const updatedBlog = res.data.blog;
+
+                // update redux blog list
+                const updatedBlogs = blog.map(b =>
+                    b._id === updatedBlog._id ? updatedBlog : b
+                );
+
+                dispatch(setBlog(updatedBlogs));
+
+                // update local states
+                setBlogLike(updatedBlog.likes.length);
+                setLiked(updatedBlog.likes.includes(user._id));
+
                 toast.success(res.data.message);
-                dispatch(setBlog(updatedBlogData))
             }
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message)
-
+            toast.error("Failed to like blog");
         }
-    }
+    };
+
 
     const changeTimeFormat = (isoDate) => {
         const date = new Date(isoDate);
@@ -76,27 +118,27 @@ const BlogView = () => {
     // };
     const handleShare = (blogId) => {
         const blogUrl = `${window.location.origin}/blogs/${blogId}`;
-      
-        if (navigator.share) {
-          navigator
-            .share({
-              title: 'Check out this blog!',
-              text: 'Read this amazing blog post.',
-              url: blogUrl,
-            })
-            .then(() => console.log('Shared successfully'))
-            .catch((err) => console.error('Error sharing:', err));
-        } else {
-          // fallback: copy to clipboard
-          navigator.clipboard.writeText(blogUrl).then(() => {
-            toast.success('Blog link copied to clipboard!');
-          });
-        }
-      };
 
-      useEffect(()=>{
-        window.scrollTo(0,0)
-      },[])
+        if (navigator.share) {
+            navigator
+                .share({
+                    title: 'Check out this blog!',
+                    text: 'Read this amazing blog post.',
+                    url: blogUrl,
+                })
+                .then(() => console.log('Shared successfully'))
+                .catch((err) => console.error('Error sharing:', err));
+        } else {
+            // fallback: copy to clipboard
+            navigator.clipboard.writeText(blogUrl).then(() => {
+                toast.success('Blog link copied to clipboard!');
+            });
+        }
+    };
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     return (
         <div className='pt-14'>
             <div className='max-w-6xl mx-auto p-10'>
@@ -178,7 +220,7 @@ const BlogView = () => {
                             <Button variant="ghost" size="sm">
                                 <Bookmark className="h-4 w-4" />
                             </Button>
-                            <Button onClick={()=>handleShare(selectedBlog._id)} variant="ghost" size="sm">
+                            <Button onClick={() => handleShare(selectedBlog._id)} variant="ghost" size="sm">
                                 <Share2 className="h-4 w-4" />
                             </Button>
                         </div>

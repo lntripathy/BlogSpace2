@@ -214,27 +214,61 @@ export const deleteBlog = async (req, res) => {
     }
 };
 
+// export const likeBlog = async (req, res) => {
+//     try {
+//         const blogId = req.params.id;
+//         const likeKrneWalaUserKiId = req.id;
+//         const blog = await Blog.findById(blogId).populate({ path: 'likes' });
+//         if (!blog) return res.status(404).json({ message: 'Blog not found', success: false })
+
+//         // Check if user already liked the blog
+//         // const alreadyLiked = blog.likes.includes(userId);
+
+//         //like logic started
+//         await blog.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
+//         await blog.save();
+
+
+//         return res.status(200).json({ message: 'Blog liked', blog, success: true });
+//     } catch (error) {
+//         console.log(error);
+
+//     }
+// }
+
 export const likeBlog = async (req, res) => {
     try {
         const blogId = req.params.id;
-        const likeKrneWalaUserKiId = req.id;
-        const blog = await Blog.findById(blogId).populate({ path: 'likes' });
-        if (!blog) return res.status(404).json({ message: 'Blog not found', success: false })
+        const userId = req.id;
 
-        // Check if user already liked the blog
-        // const alreadyLiked = blog.likes.includes(userId);
+        let blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({ success: false, message: "Blog not found" });
+        }
 
-        //like logic started
-        await blog.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } });
+        const alreadyLiked = blog.likes.includes(userId);
+
+        if (alreadyLiked) {
+            blog.likes.pull(userId);
+        } else {
+            blog.likes.push(userId);
+        }
+
         await blog.save();
 
+        blog = await Blog.findById(blogId)
+            .populate("author", "firstName lastName photoUrl");
 
-        return res.status(200).json({ message: 'Blog liked', blog, success: true });
+        res.status(200).json({
+            success: true,
+            message: alreadyLiked ? "Blog disliked" : "Blog liked",
+            blog
+        });
     } catch (error) {
-        console.log(error);
-
+        res.status(500).json({ success: false, message: "Like failed" });
     }
-}
+};
+
 
 
 export const dislikeBlog = async (req, res) => {
