@@ -87,9 +87,7 @@ const TotalProperty = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stat.value}</div>
-            <p className={`text-xs ${stat.trend === "up" ? "text-green-500" : "text-red-500"}`}>
-              {stat.change} from last month
-            </p>
+          
           </CardContent>
         </Card>
       ))}
