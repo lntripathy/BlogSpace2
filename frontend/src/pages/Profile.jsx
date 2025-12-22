@@ -98,8 +98,8 @@ const Profile = () => {
                         <Avatar className="w-40 h-40 border-2">
                             <AvatarImage src={user?.photoUrl || userLogo} />
                         </Avatar>
-                        <h1 className='text-center font-semibold text-xl text-gray-700 dark:text-gray-300 my-3'>{user?.occupation || "Mern Stack Developer"}</h1>
-                        <div className='flex gap-4 items-center'>
+                        {/* <h1 className='text-center font-semibold text-xl text-gray-700 dark:text-gray-300 my-3'>{user?.occupation || "Mern Stack Developer"}</h1> */}
+                        <div className='flex gap-4 items-center mt-5'>
                             <Link ><FaFacebook className='w-6 h-6 text-gray-800 dark:text-gray-300' /></Link>
                             <Link to={`${user?.linkedin}`} target="_blank"><FaLinkedin className='w-6 h-6 dark:text-gray-300 text-gray-800' /></Link>
                             <Link to={`${user?.github}`} target="_blank"><FaGithub className='w-6 h-6 dark:text-gray-300 text-gray-800' /></Link>

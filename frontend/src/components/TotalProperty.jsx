@@ -54,13 +54,6 @@ const TotalProperty = () => {
 
     const stats = [
         {
-          title: "Total Views",
-          value: "24.8K",
-          icon: Eye,
-          change: "+12%",
-          trend: "up",
-        },
-        {
           title: "Total Blogs",
           value: blog.length,
           icon: BarChart3,
