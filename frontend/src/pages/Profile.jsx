@@ -53,6 +53,8 @@ const Profile = () => {
     }
 
     const submitHandler = async (e) => {
+
+        console.log("input: ", input)
         e.preventDefault()
         const formData = new FormData();
         formData.append("firstName", input.firstName);
