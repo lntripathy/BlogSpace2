@@ -76,7 +76,7 @@ const RecentBlog = () => {
             ))}
           </div>
 
-          <h1 className='text-xl font-semibold'>Subscribe to Newsletter</h1>
+          {/* <h1 className='text-xl font-semibold'>Subscribe to Newsletter</h1>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
             Get the latest posts and updates delivered straight to your inbox.
           </p>
@@ -88,7 +88,7 @@ const RecentBlog = () => {
               className="bg-gray-200 dark:bg-gray-800"
             />
             <Button>Subscribe</Button>
-          </div>
+          </div> */}
 
           {/* ⭐ SUGGESTED BLOGS (MOST LIKED) */}
           <div className='mt-7'>
